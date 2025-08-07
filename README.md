@@ -146,10 +146,10 @@ graph TD
     D -- Pub/Sub --> C
     G -- Returns narrative --> D
 
-    style C fill:#f9f,stroke:#333,stroke-width:2px
-    style D fill:#ccf,stroke:#333,stroke-width:2px
-    style F fill:#f99,stroke:#333,stroke-width:2px
-    style G fill:#9cf,stroke:#333,stroke-width:2px
+    style C fill:#4f46e5,stroke:#1e1b4b,stroke-width:2px,color:#ffffff
+    style D fill:#059669,stroke:#064e3b,stroke-width:2px,color:#ffffff
+    style F fill:#dc2626,stroke:#7f1d1d,stroke-width:2px,color:#ffffff
+    style G fill:#7c3aed,stroke:#581c87,stroke-width:2px,color:#ffffff
 ```
 
 ### Data Flow (A Single Turn)
