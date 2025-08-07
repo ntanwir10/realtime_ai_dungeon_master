@@ -14,6 +14,7 @@ import {
   joinSession,
   leaveSession,
   deleteSession,
+  cleanupAllSubscribers,
 } from "./gameService.js";
 import { connection as redisConnection } from "./redisClient.js";
 import { validateEnvironment } from "./utils/envValidation.js";
@@ -421,6 +422,9 @@ async function startServer() {
         io.close(() => {
           console.log("✅ Socket.io server closed");
         });
+
+        // Clean up all session subscribers
+        await cleanupAllSubscribers();
 
         // Close Redis connections
         const { redisManager } = await import("./redisClient.js");

@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "./theme-toggle";
 import { useToast } from "./ToastProvider";
 import {
-  Gamepad2,
   Sparkles,
   ArrowRight,
   CheckCircle,
@@ -166,7 +165,7 @@ function LandingPage({ onJoinSession, onCreateSession }: LandingPageProps) {
       <div className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Gamepad2 className="h-8 w-8 text-primary" />
+            <span className="text-3xl">🐍</span>
             <h1 className="text-2xl font-bold">AI Dungeon Master</h1>
           </div>
           <ThemeToggle />
@@ -207,7 +206,7 @@ function LandingPage({ onJoinSession, onCreateSession }: LandingPageProps) {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Gamepad2 className="h-5 w-5" />
+                  <span className="text-xl">🐍</span>
                   <span>Start New Adventure</span>
                 </CardTitle>
               </CardHeader>

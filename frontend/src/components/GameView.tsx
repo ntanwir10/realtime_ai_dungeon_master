@@ -11,7 +11,6 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
-  Gamepad2,
   Wifi,
   WifiOff,
   Trash2,
@@ -343,7 +342,7 @@ function GameView() {
               Back to Menu
             </Button>
             <div className="flex items-center space-x-2">
-              <Gamepad2 className="h-6 w-6 text-primary" />
+              <span className="text-2xl">🐍</span>
               <h1 className="text-xl font-bold">AI Dungeon Master</h1>
             </div>
           </div>

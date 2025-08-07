@@ -3,6 +3,27 @@ import { getClient, getSubscriber } from "./redisClient.js";
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 
+// Track active session subscribers to prevent duplicates
+const activeSubscribers = new Set<string>();
+
+// Export for cleanup during shutdown
+export const getActiveSubscribers = () => activeSubscribers;
+
+export async function cleanupAllSubscribers() {
+  try {
+    const subscriber = getSubscriber();
+    for (const sessionId of Array.from(activeSubscribers)) {
+      const channel = `game:${sessionId}:updates`;
+      await subscriber.unsubscribe(channel);
+      console.log(`✅ Unsubscribed from channel: ${channel}`);
+    }
+    activeSubscribers.clear();
+    console.log("✅ All session subscribers cleaned up");
+  } catch (error) {
+    console.error("❌ Error cleaning up subscribers:", error);
+  }
+}
+
 // Initialize OpenAI with error handling
 let openai: OpenAI | null = null;
 try {
@@ -137,9 +158,11 @@ export async function getAIResponse(
     const [history, state] = await Promise.all([
       retryOperation(
         () => getClient().xRange(historyKey, "-", "+"),
+        // XRANGE is used to get the history of the game. Creates the Redis Stream key for the session
         "Get game history"
       ),
       retryOperation(() => getClient().hGetAll(stateKey), "Get game state"),
+      // HGETALL is used to get the state of the game. Creates the Redis Hash key for the session
     ]);
 
     // Build a more robust prompt
@@ -255,6 +278,12 @@ Describe what happens next in a vivid, engaging way. Keep your response under 20
 
 export async function setupSessionSubscriber(sessionId: string, io: any) {
   try {
+    // Check if subscriber already exists for this session
+    if (activeSubscribers.has(sessionId)) {
+      console.log(`✅ Subscriber already exists for session: ${sessionId}`);
+      return;
+    }
+
     const channel = `game:${sessionId}:updates`;
 
     await getSubscriber().subscribe(channel, (message: string) => {
@@ -271,6 +300,8 @@ export async function setupSessionSubscriber(sessionId: string, io: any) {
       }
     });
 
+    // Mark this session as having an active subscriber
+    activeSubscribers.add(sessionId);
     console.log(`✅ Subscribed to channel: ${channel}`);
   } catch (error) {
     console.error("❌ Failed to setup session subscriber:", error);
@@ -279,6 +310,17 @@ export async function setupSessionSubscriber(sessionId: string, io: any) {
         error instanceof Error ? error.message : "Unknown error"
       }`
     );
+  }
+}
+
+export async function removeSessionSubscriber(sessionId: string) {
+  try {
+    const channel = `game:${sessionId}:updates`;
+    await getSubscriber().unsubscribe(channel);
+    activeSubscribers.delete(sessionId);
+    console.log(`✅ Unsubscribed from channel: ${channel}`);
+  } catch (error) {
+    console.error("❌ Failed to remove session subscriber:", error);
   }
 }
 
@@ -409,19 +451,21 @@ export async function leaveSession(
 export async function deleteSession(sessionId: string): Promise<boolean> {
   try {
     const client = getClient();
-    
+
     // Check if session exists
     const state = await client.hGetAll(`game:${sessionId}:state`);
     if (!state.status) {
       return false; // Session doesn't exist
     }
-    
+
     // Delete all session data
     await client.del(`game:${sessionId}:state`);
     await client.del(`game:${sessionId}:events`);
     await client.del(`game:${sessionId}:players`);
-    
-    // Also delete any pub/sub channels (they'll be cleaned up automatically)
+
+    // Remove session subscriber
+    await removeSessionSubscriber(sessionId);
+
     console.log(`✅ Session ${sessionId} deleted successfully`);
     return true;
   } catch (error) {
