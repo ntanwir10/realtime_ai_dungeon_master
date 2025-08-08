@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   redis:
-    image: redis:7-alpine
+    image: redislabs/rejson:latest
     ports:
       - "6379:6379"
     volumes:
@@ -10,9 +8,13 @@ services:
     restart: unless-stopped
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
+    env_file:
+      - ./backend/.env
     environment:
       - REDIS_URL=redis://redis:6379
       - PORT=3001
@@ -22,7 +24,9 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "5173:5173"
     environment:

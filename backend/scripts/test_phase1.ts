@@ -1,4 +1,4 @@
-import { client, connection } from "../src/redisClient.js";
+import { getClient, connection } from "../src/redisClient.js";
 
 async function testPhase1() {
   console.log("--- Starting Phase 1 Verification ---");
@@ -6,6 +6,8 @@ async function testPhase1() {
   try {
     await connection;
     console.log("✓ Redis connection established");
+
+    const client = await getClient();
 
     // Test basic Redis operations
     const testKey = "test:phase1:key";
@@ -46,7 +48,6 @@ async function testPhase1() {
   } catch (error) {
     console.error("\nVerification script failed:", error);
   } finally {
-    await client.quit();
     console.log("\n--- Phase 1 Verification Complete ---");
   }
 }

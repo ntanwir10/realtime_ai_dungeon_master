@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getClient, getSubscriber } from "./redisClient.js";
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
+import { getContextualLore, initializeDefaultLore } from "./loreService.js";
 
 // Track active session subscribers to prevent duplicates
 const activeSubscribers = new Set<string>();
@@ -178,6 +179,12 @@ export async function getAIResponse(
       })
       .join("\n");
 
+    // Get contextual lore for enhanced AI responses
+    const loreContext = await getContextualLore(
+      command,
+      storyHistory.split("\n")
+    );
+
     const prompt = `You are a text-based RPG game master. 
 
 Current game state: ${JSON.stringify(gameState, null, 2)}
@@ -187,7 +194,9 @@ ${storyHistory || "This is the beginning of the adventure."}
 
 A player issues the following command: "${command}"
 
-Describe what happens next in a vivid, engaging way. Keep your response under 200 words.`;
+${loreContext}
+
+Describe what happens next in a vivid, engaging way. Keep your response under 200 words. Use the world knowledge provided to make your response consistent with the established lore.`;
 
     // Call OpenAI API with error handling
     if (!openai) {

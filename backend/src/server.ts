@@ -2,8 +2,19 @@ import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import rateLimit from "express-rate-limit";
 import cors from "cors";
+import {
+  generalLimiter,
+  gameCommandLimiter,
+  sessionCreationLimiter,
+  loreLimiter,
+  socketRateLimiter,
+} from "./utils/rateLimiter.js";
+import {
+  errorHandler,
+  asyncHandler,
+  socketErrorHandler,
+} from "./utils/errorHandler.js";
 import {
   createGameSession,
   logEvent,
@@ -16,6 +27,7 @@ import {
   deleteSession,
   cleanupAllSubscribers,
 } from "./gameService.js";
+import { initializeDefaultLore } from "./loreService.js";
 import { connection as redisConnection } from "./redisClient.js";
 import { validateEnvironment } from "./utils/envValidation.js";
 
@@ -48,25 +60,6 @@ const io = new Server(httpServer, {
 
 const port = process.env.PORT || 3001;
 
-// Rate limiting with better error handling
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: {
-    error: "Too many requests from this IP, please try again later.",
-    retryAfter: 15 * 60, // 15 minutes
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: (req, res) => {
-    res.status(429).json({
-      success: false,
-      message: "Too many requests from this IP, please try again later.",
-      retryAfter: 15 * 60,
-    });
-  },
-});
-
 // CORS middleware
 app.use(
   cors({
@@ -82,7 +75,7 @@ app.use(
 );
 
 // Middleware
-app.use(limiter);
+app.use(generalLimiter);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -90,6 +83,21 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`📨 ${req.method} ${req.path} - ${req.ip}`);
   next();
+});
+
+// Root route handler
+app.get("/", (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: "AI Dungeon Master API",
+    version: "1.0.0",
+    endpoints: {
+      health: "/api/health",
+      sessions: "/api/sessions",
+      game: "/api/game",
+      lore: "/api/lore",
+    },
+  });
 });
 
 // Error handling middleware
@@ -110,9 +118,36 @@ async function startServer() {
     await redisConnection;
     console.log("✅ Redis client connected successfully.");
 
+    // Initialize lore system
+    try {
+      await initializeDefaultLore();
+      console.log("✅ Lore system initialized successfully.");
+    } catch (error) {
+      console.error("❌ Failed to initialize lore system:", error);
+      console.warn("⚠️ Continuing without lore system...");
+    }
+
     // Game session creation endpoint
-    app.post("/api/game", async (req: Request, res: Response) => {
-      try {
+    app.get("/api/game", (req: Request, res: Response) => {
+      res.json({
+        success: true,
+        message: "Game API endpoint",
+        description:
+          "Create a new game session by sending a POST request to this endpoint",
+        example: {
+          method: "POST",
+          url: "/api/game",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        },
+      });
+    });
+
+    app.post(
+      "/api/game",
+      sessionCreationLimiter,
+      asyncHandler(async (req: Request, res: Response) => {
+        console.log("🎮 Creating new game session...");
         const sessionId = await createGameSession();
         console.log(`✅ Created new game session: ${sessionId}`);
         res.status(201).json({
@@ -120,18 +155,8 @@ async function startServer() {
           sessionId,
           message: "Game session created successfully",
         });
-      } catch (error) {
-        console.error("❌ Error creating game session:", error);
-        res.status(500).json({
-          success: false,
-          message: "Failed to create game session",
-          error:
-            process.env.NODE_ENV === "development"
-              ? (error as Error).message
-              : "Internal server error",
-        });
-      }
-    });
+      })
+    );
 
     // Get active sessions for multiplayer discovery
     app.get("/api/sessions", async (req: Request, res: Response) => {
@@ -214,6 +239,77 @@ async function startServer() {
       }
     );
 
+    // Lore management endpoints
+    app.get(
+      "/api/lore",
+      loreLimiter,
+      asyncHandler(async (req: Request, res: Response) => {
+        const { type } = req.query;
+        const { getLoreByType } = await import("./loreService.js");
+
+        if (type && typeof type === "string") {
+          const lore = await getLoreByType(type);
+          res.json({
+            success: true,
+            lore,
+            type,
+          });
+        } else {
+          // Get all lore entries using basic Redis operations
+          const { getClient } = await import("./redisClient.js");
+          const client = await getClient();
+          const allKeys = await client.keys("lore:*");
+          const loreKeys = allKeys.filter(
+            (key: string) =>
+              key.startsWith("lore:") &&
+              !key.includes(":type:") &&
+              !key.includes(":tag:")
+          );
+
+          const allLore = [];
+          for (const key of loreKeys) {
+            try {
+              const loreData = await client.json.get(key);
+              if (loreData) {
+                allLore.push(loreData as any);
+              }
+            } catch (error) {
+              console.warn(`⚠️ Failed to get lore from ${key}:`, error);
+            }
+          }
+
+          res.json({
+            success: true,
+            lore: allLore,
+          });
+        }
+      })
+    );
+
+    app.post(
+      "/api/lore",
+      loreLimiter,
+      asyncHandler(async (req: Request, res: Response) => {
+        const { type, title, content, tags } = req.body;
+
+        if (!type || !title || !content) {
+          return res.status(400).json({
+            success: false,
+            message: "Type, title, and content are required",
+          });
+        }
+
+        const { createLoreEntry } = await import("./loreService.js");
+        const id = await createLoreEntry(type, title, content, tags || []);
+
+        res.status(201).json({
+          success: true,
+          id,
+          message: "Lore entry created successfully",
+        });
+      })
+    );
+
     // Enhanced health check endpoint
     app.get("/api/health", async (req: Request, res: Response) => {
       try {
@@ -249,13 +345,18 @@ async function startServer() {
         `🔌 Socket connected: ${socket.id} (not yet joined any session)`
       );
 
+      // Apply rate limiting to socket
+      const socketLimiter = socketRateLimiter(50, 60000); // 50 events per minute
+      socketLimiter(socket, (err?: Error) => {
+        if (err) {
+          socketErrorHandler(socket, err);
+          return;
+        }
+      });
+
       // Handle connection errors
       socket.on("connect_error", (error) => {
-        console.error(`❌ Socket connection error for ${socket.id}:`, error);
-        socket.emit("game:error", {
-          message: "Connection error occurred",
-          timestamp: Date.now(),
-        });
+        socketErrorHandler(socket, error);
       });
 
       socket.on("game:join", async (data: { sessionId: string }) => {
@@ -399,6 +500,9 @@ async function startServer() {
         path: req.path,
       });
     });
+
+    // Error handling middleware - must be last
+    app.use(errorHandler);
 
     // Start the server
     httpServer.listen(port, () => {

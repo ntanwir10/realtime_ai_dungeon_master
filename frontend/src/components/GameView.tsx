@@ -10,14 +10,17 @@ import {
   Copy,
   CheckCircle,
   AlertCircle,
-  Loader2,
   Wifi,
   WifiOff,
   Trash2,
+  Sparkles,
+  BookOpen,
 } from "lucide-react";
 import StoryLog from "./StoryLog";
 import CommandInput from "./CommandInput";
 import { useToast } from "./ToastProvider";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { FadeInContainer } from "./AnimatedCard";
 
 // Socket connection with retry logic
 let socket: Socket;
@@ -334,59 +337,66 @@ function GameView() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Header */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" onClick={handleBackToLanding}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Menu
-            </Button>
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">🐍</span>
-              <h1 className="text-xl font-bold">AI Dungeon Master</h1>
+      <FadeInContainer delay={0}>
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" onClick={handleBackToLanding}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Menu
+              </Button>
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-6 w-6 text-primary" />
+                <h1 className="text-xl font-bold">AI Dungeon Master</h1>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
+              <Badge variant={isConnected ? "default" : "destructive"}>
+                {isConnected ? (
+                  <Wifi className="h-3 w-3 mr-1" />
+                ) : (
+                  <WifiOff className="h-3 w-3 mr-1" />
+                )}
+                {isConnected ? "Connected" : "Disconnected"}
+              </Badge>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
-            <Badge variant={isConnected ? "default" : "destructive"}>
-              {isConnected ? (
-                <Wifi className="h-3 w-3 mr-1" />
-              ) : (
-                <WifiOff className="h-3 w-3 mr-1" />
-              )}
-              {isConnected ? "Connected" : "Disconnected"}
-            </Badge>
-          </div>
         </div>
-      </div>
+      </FadeInContainer>
 
       <div className="container mx-auto px-4 pb-8">
         {/* Session Info */}
         {sessionId && (
-          <Card className="mb-6">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center justify-between">
-                <span>Game Session</span>
-                <div className="flex items-center space-x-2">
-                  <code className="px-2 py-1 bg-muted rounded text-sm font-mono">
-                    {sessionId}
-                  </code>
-                  <Button variant="outline" size="sm" onClick={copySessionId}>
-                    {copied ? (
-                      <CheckCircle className="h-4 w-4" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Share this session ID with friends to play together
-              </p>
-            </CardContent>
-          </Card>
+          <FadeInContainer delay={100}>
+            <Card className="mb-6 border-primary/20 shadow-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center space-x-2">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <span>Game Session</span>
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <code className="px-2 py-1 bg-muted rounded text-sm font-mono border border-border">
+                      {sessionId}
+                    </code>
+                    <Button variant="outline" size="sm" onClick={copySessionId}>
+                      {copied ? (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Share this session ID with friends to play together
+                </p>
+              </CardContent>
+            </Card>
+          </FadeInContainer>
         )}
 
         {/* Error Display */}
@@ -405,92 +415,108 @@ function GameView() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Story Log */}
           <div className="lg:col-span-2">
-            <Card className="h-[600px] flex flex-col">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Adventure Log</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearStory}
-                    disabled={story.length === 0}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Clear
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-y-auto">
-                <StoryLog story={story} />
-              </CardContent>
-            </Card>
+            <FadeInContainer delay={200}>
+              <Card className="h-[600px] flex flex-col shadow-lg border-primary/10">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center space-x-2">
+                      <BookOpen className="h-5 w-5 text-primary" />
+                      <span>Adventure Log</span>
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearStory}
+                      disabled={story.length === 0}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Clear
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto">
+                  <StoryLog story={story} />
+                </CardContent>
+              </Card>
+            </FadeInContainer>
           </div>
 
           {/* Command Panel */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CommandInput onCommand={handleCommand} disabled={isLoading} />
-                {isLoading && (
-                  <div className="flex items-center justify-center mt-4 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    AI is thinking...
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <FadeInContainer delay={300}>
+              <Card className="shadow-lg border-primary/10">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <span>Your Actions</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CommandInput
+                    onCommand={handleCommand}
+                    disabled={isLoading}
+                  />
+                  {isLoading && (
+                    <div className="flex items-center justify-center mt-4 text-muted-foreground">
+                      <LoadingSpinner size="sm" text="AI is thinking..." />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </FadeInContainer>
 
             {/* Quick Commands */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Commands</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => handleCommand("look around")}
-                  disabled={isLoading}
-                >
-                  Look around
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => handleCommand("check inventory")}
-                  disabled={isLoading}
-                >
-                  Check inventory
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => handleCommand("help")}
-                  disabled={isLoading}
-                >
-                  Help
-                </Button>
-              </CardContent>
-            </Card>
+            <FadeInContainer delay={400}>
+              <Card className="shadow-lg border-primary/10">
+                <CardHeader>
+                  <CardTitle>Quick Commands</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start hover:bg-primary/5 transition-colors"
+                    onClick={() => handleCommand("look around")}
+                    disabled={isLoading}
+                  >
+                    Look around
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start hover:bg-primary/5 transition-colors"
+                    onClick={() => handleCommand("check inventory")}
+                    disabled={isLoading}
+                  >
+                    Check inventory
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start hover:bg-primary/5 transition-colors"
+                    onClick={() => handleCommand("help")}
+                    disabled={isLoading}
+                  >
+                    Help
+                  </Button>
+                </CardContent>
+              </Card>
+            </FadeInContainer>
 
             {/* Game Tips */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Tips</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>• Be descriptive with your actions</p>
-                <p>• Use "talk to [character]" for dialogue</p>
-                <p>• Try "examine [object]" for details</p>
-                <p>• Use "go [direction]" to move</p>
-              </CardContent>
-            </Card>
+            <FadeInContainer delay={500}>
+              <Card className="shadow-lg border-primary/10">
+                <CardHeader>
+                  <CardTitle>Tips</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm text-muted-foreground">
+                  <p>• Be descriptive with your actions</p>
+                  <p>• Use "talk to [character]" for dialogue</p>
+                  <p>• Try "examine [object]" for details</p>
+                  <p>• Use "go [direction]" to move</p>
+                </CardContent>
+              </Card>
+            </FadeInContainer>
           </div>
         </div>
       </div>

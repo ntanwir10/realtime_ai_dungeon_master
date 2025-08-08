@@ -8,7 +8,31 @@
 
 > Competing in the **"Real-Time AI Innovators"** challenge prompt, demonstrating how Redis accelerates the future of AI through high-impact use cases like real-time feature streaming, semantic caching, and advanced state management.
 
-## About This Project
+## 📋 Table of Contents
+
+- [🎯 Project Overview](#-project-overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [🧠 Semantic Lore System](#-semantic-lore-system)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [🏗️ Service Architecture & Container Details](#️-service-architecture--container-details)
+- [Docker Deployment](#docker-deployment)
+- [API Endpoints](#api-endpoints)
+- [Development](#development)
+- [Project Structure](#project-structure)
+- [Redis Data Structures](#redis-data-structures)
+- [🔧 Redis CLI Commands & Data Access](#-redis-cli-commands--data-access)
+- [📊 Real Redis Data Examples](#-real-redis-data-examples)
+- [🔍 Understanding Redis Data Structure](#-understanding-redis-data-structure)
+- [📈 Data Analysis Insights](#-data-analysis-insights)
+- [📋 Redis Command Summary](#-redis-command-summary)
+- [Environment Variables](#environment-variables)
+- [🔍 Troubleshooting](#-troubleshooting)
+- [Contributing](#contributing)
+- [Support](#support)
+
+## 🎯 Project Overview
 
 This project was built for the **[Redis AI Challenge](https://dev.to/challenges/redis-2025-07-23?)** for the **"Real-Time AI Innovators"** challenge prompt. The goal was to build an innovative AI-powered application using Redis as the real-time data layer, going beyond simple chatbots to explore high-impact use cases like real-time multiplayer gaming with AI-driven storytelling.
 
@@ -17,7 +41,7 @@ This project was built for the **[Redis AI Challenge](https://dev.to/challenges/
 - **Challenge:** Redis AI Challenge
 - **Prompt:** Real-Time AI Innovators
 - **Focus:** Real-time multiplayer AI dungeon master using Redis for state management, event streaming, and pub/sub broadcasting
-- **Technology Stack:** Redis, Node.js, React, OpenAI API, Socket.IO
+- **Technology Stack:** Redis, Node.js, React, OpenAI API, Socket.IO, Docker, TypeScript, Tailwind CSS, Vite, nginx
 
 ### How This Project Demonstrates Redis AI Innovation
 
@@ -46,16 +70,49 @@ This project showcases how Redis accelerates the future of AI by implementing se
 - **Redis Sets** track active players in each session with `SADD`, `SREM`, `SCARD`
 - **Redis Keys** enable session discovery with pattern matching (`KEYS game:*:state`)
 - **Redis DEL** provides session cleanup and data management
+- **Redis JSON** powers semantic lore search with embeddings
 - **Redis Connection Management** with dual clients (main + subscriber) for optimal performance
 
-#### **5. Beyond Simple Chatbots**
+#### **5. Semantic Lore System for Enhanced AI Context**
+
+- **Redis JSON (JSON.SET, JSON.GET)** stores AI-generated lore with embeddings
+- **Semantic similarity search** using cosine similarity for contextual responses
+- **Multi-type lore management** (characters, locations, items, world rules, quests)
+- **Tag-based indexing** for efficient lore retrieval and categorization
+- **Contextual AI responses** that reference relevant lore based on player actions
+
+> **Note**: For detailed Redis feature descriptions, see the [Features](#features) section below.
+
+#### **6. Beyond Simple Chatbots**
 
 - **Complex game logic** with persistent world state
 - **Multiplayer coordination** with real-time player tracking
 - **Dynamic storytelling** that adapts to collective player actions
 - **Session persistence** with automatic rejoining capabilities
+- **Semantic search** for contextual AI responses
 
 This demonstrates how Redis can power sophisticated AI applications that go far beyond simple question-answer interactions, creating truly interactive and collaborative AI experiences.
+
+### 🏆 Redis AI Challenge Impact
+
+This project was specifically built for the **[Redis AI Challenge](https://dev.to/challenges/redis-2025-07-23?)** and demonstrates several key innovations in AI-powered applications using Redis:
+
+#### **Challenge Alignment**
+
+- **Challenge**: Redis AI Challenge
+- **Prompt**: Real-Time AI Innovators
+- **Focus**: Real-time multiplayer AI dungeon master using Redis for state management, event streaming, and pub/sub broadcasting
+- **Technology Stack**: Redis, Node.js, React, OpenAI API, Socket.IO, Docker, TypeScript, Tailwind CSS, Vite, nginx
+
+#### **Key Innovations**
+
+This project showcases how Redis accelerates the future of AI through:
+
+- **Real-time multiplayer gaming** with instant state synchronization
+- **Semantic lore system** with AI-powered contextual responses
+- **Event streaming** for complete game history and replay capability
+- **Advanced Redis data structures** (Streams, Hashes, Sets, JSON) for optimal performance
+- **Beyond simple chatbots** - creating truly interactive AI experiences
 
 ## Features
 
@@ -71,11 +128,31 @@ This demonstrates how Redis can power sophisticated AI applications that go far 
 ### Redis-Powered Infrastructure
 
 - **Redis Streams (XADD, XRANGE)**: Immutable event logging for game history
+  - Captures every player action as immutable events
+  - Enables complete game history and replay capability
+  - Feeds AI context for intelligent responses
 - **Redis Hashes (HSET, HGETALL)**: Fast game state management and caching
+  - Stores game state and context for rapid retrieval
+  - Enables intelligent prompt construction using cached game history
+  - Reduces API calls through context-aware response generation
 - **Redis Pub/Sub (PUBLISH, SUBSCRIBE)**: Real-time narrative broadcasting
+  - Enables instant narrative broadcasting to all players
+  - Synchronizes game state across multiple players in real-time
+  - Provides zero-latency updates for immersive multiplayer experiences
 - **Redis Sets (SADD, SREM, SCARD)**: Player tracking and session management
+  - Tracks active players in each session
+  - Enables session discovery with pattern matching
 - **Redis Keys (KEYS)**: Session discovery with pattern matching
+  - Enables session browser functionality
+  - Provides session cleanup and data management
 - **Redis DEL**: Session cleanup and data management
+  - Removes all session data when deleting
+  - Enables automatic cleanup of inactive sessions
+- **Redis JSON (JSON.SET, JSON.GET)**: Semantic lore system with embeddings
+  - Powers semantic lore search with embeddings
+  - Enables semantic similarity search using cosine similarity
+  - Provides multi-type lore management (characters, locations, items, world rules, quests)
+  - Supports tag-based indexing for efficient lore retrieval and categorization
 
 ### Real-Time Communication
 
@@ -91,6 +168,8 @@ This demonstrates how Redis can power sophisticated AI applications that go far 
 - **Fallback Responses**: Graceful handling when AI services are unavailable
 - **Error-Specific Handling**: Rate limits, quotas, and network issues
 - **Real-time Narrative Generation**: Immediate broadcasting to all players
+- **Semantic Lore System**: AI-generated lore with semantic search capabilities
+- **Contextual AI Responses**: References relevant lore based on player actions
 
 ### Production-Ready Features
 
@@ -117,6 +196,9 @@ This demonstrates how Redis can power sophisticated AI applications that go far 
 - **Event History Preservation**: Complete game state replay capability
 - **Session State Caching**: Instant game resumption
 - **Player Context Preservation**: Maintains context across reconnections
+- **Semantic Lore Search**: AI-powered contextual responses using embeddings
+- **Multi-type Lore Management**: Characters, locations, items, world rules, and quests
+- **Tag-based Lore Indexing**: Efficient categorization and retrieval system
 
 ## Architecture
 
@@ -178,6 +260,8 @@ sequenceDiagram
 
 ### Docker Architecture Flow
 
+The application uses a **multi-container Docker setup** with nginx as a reverse proxy:
+
 ```flow
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
 │   Browser   │───►│   nginx     │───►│   React     │
@@ -191,53 +275,101 @@ sequenceDiagram
                     └─────────────┘    └─────────────┘
 ```
 
+**Container Details:**
+
+- **Frontend Container (nginx-based)**: Multi-stage build serving React app with API proxying
+- **Backend Container (Node.js)**: Express server with Socket.IO for real-time communication
+- **Redis Container**: In-memory data store with RedisJSON module for advanced features
+
+## 🧠 Semantic Lore System
+
+The application includes a sophisticated semantic lore system that enhances AI responses with contextual knowledge:
+
+### Lore Types
+
+- **Characters**: NPCs, allies, enemies, and their backstories
+- **Locations**: Places, dungeons, cities, and their descriptions
+- **Items**: Weapons, artifacts, magical objects, and their properties
+- **World Rules**: Magic systems, laws, customs, and game mechanics
+- **Quests**: Missions, objectives, and storylines
+
+### Semantic Search Features
+
+- **Embedding Generation**: Uses OpenAI's text-embedding-3-small model
+- **Cosine Similarity**: Finds most relevant lore based on semantic similarity
+- **Contextual Retrieval**: Automatically selects relevant lore for AI responses
+- **Tag-based Indexing**: Efficient categorization and filtering
+- **Multi-type Search**: Search across all lore types or filter by specific type
+
+### Redis JSON Integration
+
+- **JSON.SET**: Stores lore entries with embeddings and metadata
+- **JSON.GET**: Retrieves complete lore entries with all fields
+- **Type Indexing**: Uses Redis Sets for efficient type-based queries
+- **Tag Indexing**: Uses Redis Sets for tag-based filtering
+- **Pattern Matching**: Uses KEYS for flexible lore discovery
+
+### Contextual AI Enhancement
+
+- **Automatic Lore Selection**: AI responses include relevant lore context
+- **Dynamic Storytelling**: Lore influences narrative generation
+- **Consistent World Building**: Maintains lore consistency across sessions
+- **Player-Driven Discovery**: Lore reveals based on player actions
+
 ## Prerequisites
 
 - Node.js 18+
-- Redis 7+
+- Redis 7+ (with RedisJSON module)
 - OpenAI API Key
 
 ## Quick Start
 
-### 1. Clone the Repository
+### Option 1: Docker Compose (Recommended - Easiest)
 
 ```bash
-git clone <repository-url>
+# 1. Clone the Repository
+git clone https://github.com/ntanwir10/realtime_ai_dungeon_master
 cd realtime_ai_dungeon_master
-```
 
-### 2. Set Up Environment Variables
-
-```bash
-# Backend
+# 2. Set Up Environment Variables
 cp backend/.env.example backend/.env
 # Edit backend/.env and add your OpenAI API key
 
-# Frontend
-cp frontend/.env.example frontend/.env
+# 3. Start Everything with Docker
+docker-compose up --build
+
+# 4. Access the Application
+# Frontend: http://localhost:5173
+# Backend API: http://localhost:3001
+# Redis: localhost:6379
 ```
 
-### 3. Install Dependencies
+**What this starts:**
+
+- ✅ **Redis** with RedisJSON module (port 6379)
+- ✅ **Backend** Node.js server (port 3001)
+- ✅ **Frontend** React app with nginx (port 5173)
+- ✅ **All networking** between containers
+
+### Option 2: Manual Development Setup
 
 ```bash
-# Backend
-cd backend
-npm install
+# 1. Clone the Repository
+git clone https://github.com/ntanwir10/realtime_ai_dungeon_master
+cd realtime_ai_dungeon_master
 
-# Frontend
-cd ../frontend
-npm install
-```
+# 2. Set Up Environment Variables
+cp backend/.env.example backend/.env
+# Edit backend/.env and add your OpenAI API key
 
-### 4. Start Redis
+# 3. Install Dependencies
+cd backend && npm install
+cd ../frontend && npm install
 
-```bash
-redis-server
-```
+# 4. Start Redis with RedisJSON
+docker run -d -p 6379:6379 redislabs/rejson:latest
 
-### 5. Start the Application
-
-```bash
+# 5. Start the Application
 # Terminal 1 - Backend
 cd backend
 npm run dev
@@ -245,116 +377,273 @@ npm run dev
 # Terminal 2 - Frontend
 cd frontend
 npm run dev
+
+# 6. Access the Application
+# Frontend: http://localhost:5173
+# Backend API: http://localhost:3001
 ```
 
-### 6. Access the Application
+### Docker Commands
 
-Open your browser and navigate to `http://localhost:5173`
+```bash
+# Start all services
+docker-compose up --build
+
+# Start in background
+docker-compose up -d --build
+
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Restart specific service
+docker-compose restart backend
+```
+
+## 🏗️ Service Architecture & Container Details
+
+### **Redis Container**
+
+- **Port**: 6379
+- **Image**: `redislabs/rejson:latest`
+- **Purpose**: Database with RedisJSON module
+- **Data**: Game sessions, events, lore, player tracking
+- **Features**: JSON storage, semantic search, pub/sub
+
+### **Backend Container**
+
+- **Port**: 3001
+- **Image**: Custom Node.js/TypeScript
+- **Purpose**: API server with Socket.IO
+- **Features**: Game logic, AI integration, WebSocket handling
+- **Health Check**: `http://localhost:3001/api/health`
+
+### **Frontend Container**
+
+- **Port**: 5173
+- **Image**: nginx serving React app
+- **Purpose**: Web interface
+- **Features**: UI, WebSocket client, session management
+- **Proxy**: Routes `/api/*` to backend, `/socket.io/*` to backend
+
+### **Network Flow**
+
+```flow
+Browser → Frontend (5173) → Backend (3001) → Redis (6379)
+```
 
 ## Docker Deployment
 
-### Architecture Overview
+### 🐳 **OS-Agnostic Multi-Platform Docker Setup**
 
-The application uses a **multi-container Docker setup** with nginx as a reverse proxy:
+The application uses a **truly OS-agnostic multi-container Docker setup** that automatically adapts to any platform (macOS, Linux, Windows) without manual configuration.
 
-#### **Frontend Container (nginx-based):**
+#### **🏗️ Architecture Overview**
 
-- **Multi-stage build**: First builds React app, then serves with nginx
-- **nginx.conf**: Handles routing and API proxying
+```mermaid
+graph TD
+    subgraph "Docker Containers"
+        A[Frontend Container<br/>nginx + React<br/>Port 5173] --> B[Backend Container<br/>Node.js + TypeScript<br/>Port 3001]
+        B --> C[Redis Container<br/>RedisJSON<br/>Port 6379]
+    end
+    
+    subgraph "Platform Support"
+        D[macOS ARM64] --> A
+        E[macOS AMD64] --> A
+        F[Linux AMD64] --> A
+        G[Linux ARM64] --> A
+        H[Windows AMD64] --> A
+    end
+```
+
+#### **🔧 Container Details**
+
+##### **Frontend Container (nginx-based):**
+
+- **Multi-stage build**: Builds React app with Node.js, serves with nginx
+- **OS-agnostic**: Automatically uses host platform architecture
 - **Port 5173**: Serves the React application
 - **API Proxy**: Routes `/api/*` requests to backend
 - **WebSocket Proxy**: Routes `/socket.io/*` to backend
+- **SPA Support**: Handles client-side routing
 
-#### **Backend Container (Node.js):**
+##### **Backend Container (Node.js):**
 
 - **Port 3001**: Express server with Socket.IO
-- **Health checks**: Built-in monitoring
+- **TypeScript**: Direct execution with `tsx` (no compilation step)
+- **Health checks**: Built-in monitoring and status endpoints
 - **Redis integration**: Session and state management
+- **Rate limiting**: IPv6-compatible rate limiting
 
-#### **Redis Container:**
+##### **Redis Container:**
 
-- **Port 6379**: In-memory data store
+- **Port 6379**: In-memory data store with RedisJSON module
 - **Session storage**: Game state and player data
-- **Event streaming**: Real-time updates
+- **Event streaming**: Real-time updates via Redis Streams
+- **Lore system**: Semantic search with embeddings
 
-### Docker Architecture Flow
+### 🚀 **Multi-Platform Deployment Options**
 
-```flow
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Browser   │───►│   nginx     │───►│   React     │
-│             │    │  (frontend) │    │   (frontend)│
-└─────────────┘    └─────────────┘    └─────────────┘
-                           │
-                           ▼
-                    ┌─────────────┐    ┌─────────────┐
-                    │   Backend   │◄──►│    Redis    │
-                    │  (Node.js)  │    │   (Cache)   │
-                    └─────────────┘    └─────────────┘
-```
-
-### Why nginx.conf in Frontend?
-
-The `nginx.conf` is in the frontend directory because:
-
-1. **Multi-stage Docker build**: Frontend uses nginx to serve built React files
-2. **API Proxying**: nginx routes `/api/*` requests to backend container
-3. **WebSocket Support**: Proxies `/socket.io/*` for real-time communication
-4. **SPA Routing**: Handles client-side routing for React Router
-5. **CORS Avoidance**: Single domain for frontend and API calls
-
-### Using Docker Files
-
-#### **Backend Dockerfile:**
-
-```dockerfile
-FROM node:18-alpine
-# Builds and runs the Node.js/TypeScript backend
-# Exposes port 3001 with health checks
-```
-
-#### **Frontend Dockerfile:**
-
-```dockerfile
-# Stage 1: Build React app with Node.js
-FROM node:18-alpine as builder
-# Builds the React application
-
-# Stage 2: Serve with nginx
-FROM nginx:alpine
-# Serves built files + proxies API calls
-```
-
-#### **docker-compose.yml:**
-
-- **Redis**: Database for session storage
-- **Backend**: Node.js API server (port 3001)
-- **Frontend**: nginx serving React app (port 5173)
-
-### Using Docker Compose
+#### **Option 1: Development (Single Platform)**
 
 ```bash
-# Build and start all services
+# Automatically uses host platform
 docker-compose up --build
 
 # Run in background
-docker-compose up -d
+docker-compose up -d --build
 
 # Stop services
 docker-compose down
 ```
 
-### Manual Docker Build
+#### **Option 2: Production (Multi-Platform)**
 
 ```bash
-# Backend
-cd backend
-docker build -t ai-dungeon-backend .
-docker run -p 3001:3001 ai-dungeon-backend
+# Build for all platforms using Docker Bake
+docker buildx bake all
 
-# Frontend
-cd frontend
-docker build -t ai-dungeon-frontend .
-docker run -p 5173:5173 ai-dungeon-frontend
+# Build specific services for all platforms
+docker buildx bake backend-all
+docker buildx bake frontend-all
+
+# Build for specific platforms
+docker buildx build --platform linux/amd64,linux/arm64 .
+```
+
+#### **Option 3: Manual Platform-Specific Builds**
+
+```bash
+# Backend for specific platform
+docker buildx build --platform linux/amd64 -t ai-dungeon-backend ./backend
+
+# Frontend for specific platform
+docker buildx build --platform linux/arm64 -t ai-dungeon-frontend ./frontend
+```
+
+### 📋 **Docker Configuration Files**
+
+#### **docker-compose.yml (Development)**
+
+- **Automatic platform detection**: No fixed platform specifications
+- **Service orchestration**: Redis, Backend, Frontend
+- **Volume management**: Persistent Redis data
+- **Health checks**: Built-in monitoring
+
+#### **docker-compose.prod.yml (Production)**
+
+- **Production optimizations**: Health checks, restart policies
+- **Environment-specific**: Production environment variables
+- **Service dependencies**: Proper startup order
+
+#### **docker-bake.hcl (Multi-Platform)**
+
+- **Docker Bake configuration**: Advanced build management
+- **Platform targets**: linux/amd64, linux/arm64
+- **Build optimization**: Parallel builds, caching
+- **Production ready**: Optimized for deployment
+
+### 🔧 **Dockerfile Details**
+
+#### **Backend Dockerfile:**
+
+```dockerfile
+# OS-agnostic base image
+FROM node:18-alpine AS base
+
+# Multi-stage build for optimization
+FROM base AS deps
+# Install dependencies
+
+FROM base AS runner
+# Production image with TypeScript execution
+CMD ["npx", "tsx", "src/server.ts"]
+```
+
+#### **Frontend Dockerfile:**
+
+```dockerfile
+# Build stage
+FROM node:18-alpine AS builder
+# Build React application
+
+# Production stage
+FROM nginx:alpine AS production
+# Serve with nginx + API proxying
+```
+
+### 🌐 **Platform Support Matrix**
+
+| Platform | Architecture          | Support  | Performance |
+| -------- | --------------------- | -------- | ----------- |
+| macOS    | ARM64 (Apple Silicon) | ✅ Native | ⭐⭐⭐⭐⭐       |
+| macOS    | AMD64 (Intel)         | ✅ Native | ⭐⭐⭐⭐⭐       |
+| Linux    | AMD64                 | ✅ Native | ⭐⭐⭐⭐⭐       |
+| Linux    | ARM64                 | ✅ Native | ⭐⭐⭐⭐⭐       |
+| Windows  | AMD64 (WSL2)          | ✅ Native | ⭐⭐⭐⭐        |
+| Windows  | AMD64 (Native)        | ✅ Native | ⭐⭐⭐⭐        |
+
+### 🎯 **Key Benefits**
+
+#### **Automatic Platform Detection**
+
+- **No manual configuration**: Works on any system out of the box
+- **Native performance**: Uses host architecture for optimal speed
+- **Future-proof**: Automatically supports new architectures
+
+#### **Multi-Platform Deployment**
+
+- **Single command**: `docker buildx bake all` builds for all platforms
+- **Registry ready**: Push to Docker Hub for cross-platform distribution
+- **CI/CD friendly**: Integrates with GitHub Actions, GitLab CI, etc.
+
+#### **Development Experience**
+
+- **Fast builds**: Local development uses host platform
+- **Hot reloading**: TypeScript execution without compilation
+- **Easy debugging**: Direct access to container logs
+
+### 🔍 **Troubleshooting Docker Issues**
+
+#### **Platform-Specific Issues**
+
+```bash
+# Check Docker platform support
+docker buildx ls
+
+# Create multi-platform builder
+docker buildx create --name multiplatform --use
+
+# Inspect image platforms
+docker buildx imagetools inspect your-image:tag
+```
+
+#### **Build Issues**
+
+```bash
+# Clean Docker cache
+docker system prune -a
+
+# Rebuild without cache
+docker-compose build --no-cache
+
+# Check build logs
+docker-compose logs --tail=100
+```
+
+#### **Runtime Issues**
+
+```bash
+# Check container health
+docker-compose ps
+
+# View container logs
+docker-compose logs -f backend
+
+# Access container shell
+docker-compose exec backend sh
 ```
 
 ## API Endpoints
@@ -1047,9 +1336,12 @@ realtime_ai_dungeon_master/
 │   ├── src/
 │   │   ├── server.ts              # Express server with Socket.IO
 │   │   ├── gameService.ts         # Game logic and AI integration
+│   │   ├── loreService.ts         # Lore system with semantic search
 │   │   ├── redisClient.ts         # Redis connection management
 │   │   └── utils/
-│   │       └── envValidation.ts   # Environment validation utilities
+│   │       ├── envValidation.ts   # Environment validation utilities
+│   │       ├── errorHandler.ts    # Error handling and logging
+│   │       └── rateLimiter.ts    # Rate limiting with IPv6 support
 │   ├── scripts/
 │   │   ├── test_phase1.ts         # Phase 1 verification tests
 │   │   └── test_complete.ts       # Complete implementation tests
@@ -1131,6 +1423,473 @@ realtime_ai_dungeon_master/
 - Removes all session data when deleting
 - Automatic cleanup of inactive sessions
 
+### Lore System (JSON)
+
+- `lore:{id}` - AI-generated lore entries with embeddings
+  - `id`: Unique lore identifier
+  - `type`: Lore type (character, location, item, world_rule, quest)
+  - `title`: Lore title
+  - `content`: Detailed lore content
+  - `embedding`: Vector embedding for semantic search
+  - `tags`: Array of tags for categorization
+  - `created_at`: Timestamp when lore was created
+  - `updated_at`: Timestamp when lore was last updated
+
+### Lore Indexing (Sets)
+
+- `lore:type:{type}` - Index of lore entries by type
+  - Uses `SADD` to add lore IDs to type index
+  - Uses `SMEMBERS` to get all lore of a specific type
+- `lore:tag:{tag}` - Index of lore entries by tag
+  - Uses `SADD` to add lore IDs to tag index
+  - Uses `SMEMBERS` to get all lore with a specific tag
+
+## 🔧 Redis CLI Commands & Data Access
+
+### Connect to Redis
+
+```bash
+# Connect to Docker Redis (if using docker-compose)
+docker exec -it $(docker ps -q --filter "ancestor=redislabs/rejson") redis-cli
+
+# Connect to local Redis
+redis-cli
+
+# Connect to Redis with password
+redis-cli -a your_password
+
+# Connect to remote Redis
+redis-cli -h your_redis_host -p 6379
+```
+
+### Lore System Commands
+
+```bash
+# List all lore entries
+KEYS lore:*
+
+# Get lore by type
+KEYS lore:world_rule_*
+
+# View lore content
+JSON.GET lore:world_rule_1703123456789_abc123
+
+# Search lore by tag
+KEYS lore:tag:magic
+
+# Get all lore of a specific type
+SMEMBERS lore:type:character
+
+# Get all lore with a specific tag
+SMEMBERS lore:tag:magic
+
+# Test RedisJSON module
+JSON.SET test $ '{"hello": "world"}'
+JSON.GET test
+```
+
+### Game Session Commands
+
+```bash
+# List all active sessions
+KEYS game:*:state
+
+# Get session details
+HGETALL game:abc123def4:state
+
+# View session events
+XRANGE game:abc123def4:events - + COUNT 20
+
+# Check player count
+SCARD game:abc123def4:players
+
+# List all players in session
+SMEMBERS game:abc123def4:players
+```
+
+### Data Cleanup Commands
+
+```bash
+# Delete specific session
+DEL game:abc123def4:state game:abc123def4:events game:abc123def4:players
+
+# Delete all sessions
+DEL $(redis-cli KEYS "game:*")
+
+# Clear all data (DANGER!)
+FLUSHALL
+
+# Check memory usage
+INFO memory
+```
+
+### Monitoring & Debugging Commands
+
+```bash
+# Monitor all Redis commands in real-time
+MONITOR
+
+# Watch specific patterns
+PSUBSCRIBE game:*:updates
+
+# See database statistics
+INFO keyspace
+
+# Count all keys
+DBSIZE
+
+# See all Redis info
+INFO
+
+# Pretty print JSON (if you have jq installed)
+redis-cli --raw JSON.GET lore:world_rule_1703123456789_abc123 | jq .
+
+# Get specific session info
+HGET game:97oZyf91Wr:state status
+
+# Get session creation time
+HGET game:97oZyf91Wr:state created_at
+
+# Get last activity time
+HGET game:97oZyf91Wr:state last_activity
+
+# Count events in a session
+XLEN game:97oZyf91Wr:events
+
+# Get latest event only
+XREVRANGE game:97oZyf91Wr:events + - COUNT 1
+```
+
+### Quick Reference Commands
+
+```bash
+# 1. Connect to Redis
+docker exec -it $(docker ps -q --filter "ancestor=redislabs/rejson") redis-cli
+
+# 2. See active sessions
+KEYS game:*:state
+
+# 3. Get session details
+HGETALL game:abc123def4:state
+
+# 4. See recent events
+XRANGE game:abc123def4:events - + COUNT 5
+
+# 5. Check players
+SMEMBERS game:abc123def4:players
+
+# 6. See lore entries
+KEYS lore:*
+
+# 7. View specific lore
+JSON.GET lore:world_rule_1703123456789_abc123
+```
+
+## 📊 Real Redis Data Examples
+
+### **Current Active Sessions**
+
+```bash
+# List all keys in Redis
+redis-cli KEYS "*"
+# Output:
+# 1) "game:97oZyf91Wr:events"
+# 2) "game:97oZyf91Wr:state"
+# 3) "game:97oZyf91Wr:players"
+# 4) "game:IXJCDOUBfw:state"
+# 5) "game:IXJCDOUBfw:events"
+
+# Total keys in database
+redis-cli DBSIZE
+# Output: (integer) 5
+```
+
+### **Session State Example**
+
+```bash
+# Get session details
+redis-cli HGETALL "game:97oZyf91Wr:state"
+# Output:
+# 1) "status"
+# 2) "active"
+# 3) "created_at"
+# 4) "1754535502551"
+# 5) "last_activity"
+# 6) "1754542615439"
+
+# Explanation:
+# - Session ID: 97oZyf91Wr
+# - Status: active (session is currently running)
+# - Created: January 6, 2025 at 12:25:02 UTC
+# - Last Activity: January 6, 2025 at 14:30:15 UTC
+```
+
+### **Game Events Example**
+
+```bash
+# View recent events in a session
+redis-cli XRANGE "game:97oZyf91Wr:events" - + COUNT 5
+# Output:
+# 1) 1) "1754535510729-0"
+#    2) 1) "playerId"
+#       2) "pGX0DZIp7ubmiV0aAAAG"
+#       3) "event"
+#       4) "{\"action\":\"command\",\"target\":\"check inventory\"}"
+#       5) "timestamp"
+#       6) "1754535510728"
+
+# Explanation:
+# - Event ID: 1754535510729-0 (timestamp-sequence)
+# - Player ID: pGX0DZIp7ubmiV0aAAAG (Socket.IO socket ID)
+# - Action: "check inventory" (player command)
+# - Timestamp: January 6, 2025 at 12:25:10 UTC
+```
+
+### **Player Tracking Example**
+
+```bash
+# List all players in a session
+redis-cli SMEMBERS "game:97oZyf91Wr:players"
+# Output:
+# 1) "artUPKpsNEKy4rEWAAAJ"
+# 2) "dqg5atiR-udkCpCDAAAM"
+# 3) "NV2U_rEpGCMJY3eEAAAM"
+
+# Count players in session
+redis-cli SCARD "game:97oZyf91Wr:players"
+# Output: (integer) 3
+
+# Explanation:
+# - 3 active players in session 97oZyf91Wr
+# - Each player has a unique Socket.IO socket ID
+# - Players can join/leave dynamically
+```
+
+### **Memory Usage Example**
+
+```bash
+# Check Redis memory usage
+redis-cli INFO memory
+# Output:
+# used_memory:987184
+# used_memory_human:964.05K
+# used_memory_rss:5488640
+# used_memory_rss_human:5.23M
+# mem_fragmentation_ratio:5.66
+
+# Explanation:
+# - Total memory used: 964.05K
+# - RSS memory: 5.23M
+# - Memory fragmentation: 5.66 (normal range)
+# - Efficient memory usage for game data
+```
+
+### **Lore System Status**
+
+```bash
+# Check for lore entries
+redis-cli KEYS "lore:*"
+# Output: (empty array)
+
+# Explanation:
+# - No lore entries currently exist
+# - Lore system is ready but not populated
+# - Lore would be created as AI generates world content
+```
+
+### **Second Session Example**
+
+```bash
+# Get session details for second session
+redis-cli HGETALL "game:IXJCDOUBfw:state"
+# Output:
+# 1) "status"
+# 2) "active"
+# 3) "created_at"
+# 4) "1754542615441"
+# 5) "last_activity"
+# 6) "1754543782187"
+
+# View events in second session
+redis-cli XRANGE "game:IXJCDOUBfw:events" - + COUNT 3
+# Output:
+# 1) 1) "1754542631165-0"
+#    2) 1) "playerId"
+#       2) "NV2U_rEpGCMJY3eEAAAM"
+#       3) "event"
+#       4) "{\"action\":\"command\",\"target\":\"look around\"}"
+#       5) "timestamp"
+#       6) "1754542631164"
+# 2) 1) "1754542637961-0"
+#    2) 1) "playerId"
+#       2) "NV2U_rEpGCMJY3eEAAAM"
+#       3) "event"
+#       4) "{\"action\":\"command\",\"target\":\"check inventory\"}"
+#       5) "timestamp"
+#       6) "1754542637960"
+# 3) 1) "1754542646477-0"
+#    2) 1) "playerId"
+#       2) "NV2U_rEpGCMJY3eEAAAM"
+#       3) "event"
+#       4) "{\"action\":\"command\",\"target\":\"help\"}"
+#       5) "timestamp"
+#       6) "1754542646476"
+
+# Check players in second session
+redis-cli SMEMBERS "game:IXJCDOUBfw:players"
+# Output: (empty array)
+
+# Explanation:
+# - Session IXJCDOUBfw is active but has no current players
+# - Recent events show player commands: "look around", "check inventory", "help"
+# - Player NV2U_rEpGCMJY3eEAAAM was active but may have disconnected
+```
+
+### **Database Statistics**
+
+```bash
+# Get keyspace information
+redis-cli INFO keyspace
+# Output:
+# db0:keys=5,expires=0,avg_ttl=0,subexpiry=0
+
+# Explanation:
+# - 5 total keys in database
+# - No expired keys (expires=0)
+# - No TTL set on keys (avg_ttl=0)
+# - Clean database state
+```
+
+### **Event Stream Analysis**
+
+```bash
+# Count events in first session
+redis-cli XLEN "game:97oZyf91Wr:events"
+# Output: (integer) 1
+
+# Count events in second session
+redis-cli XLEN "game:IXJCDOUBfw:events"
+# Output: (integer) 4
+
+# Get latest event from first session
+redis-cli XREVRANGE "game:97oZyf91Wr:events" + - COUNT 1
+# Output:
+# 1) 1) "1754535510729-0"
+#    2) 1) "playerId"
+#       2) "pGX0DZIp7ubmiV0aAAAG"
+#       3) "event"
+#       4) "{\"action\":\"command\",\"target\":\"check inventory\"}"
+#       5) "timestamp"
+#       6) "1754535510728"
+
+# Explanation:
+# - Session 97oZyf91Wr: 1 event (single command)
+# - Session IXJCDOUBfw: 4 events (more active)
+# - Latest event: "check inventory" command
+# - Event timestamps show recent activity
+```
+
+## 🔍 Understanding Redis Data Structure
+
+### **Key Patterns**
+
+- **Session Keys**: `game:{sessionId}:{type}`
+  - `game:97oZyf91Wr:state` - Session metadata
+  - `game:97oZyf91Wr:events` - Event stream
+  - `game:97oZyf91Wr:players` - Player set
+
+### **Session State Fields**
+
+- `status`: "active" | "ended" - Session status
+- `created_at`: Unix timestamp - When session was created
+- `last_activity`: Unix timestamp - Last player activity
+
+### **Event Stream Structure**
+
+- **Event ID**: `{timestamp}-{sequence}` (e.g., "1754535510729-0")
+- **Player ID**: Socket.IO socket identifier
+- **Event Data**: JSON string with action and target
+- **Timestamp**: Unix timestamp of event
+
+### **Player Tracking**
+
+- **Player IDs**: Socket.IO socket IDs (e.g., "artUPKpsNEKy4rEWAAAJ")
+- **Dynamic Membership**: Players can join/leave anytime
+- **Real-time Count**: Use SCARD for current player count
+
+### **Memory Efficiency**
+
+- **Small Footprint**: ~964KB for 2 active sessions
+- **Efficient Storage**: Redis streams for events, sets for players
+- **Fast Access**: O(1) lookups for session state and player counts
+
+## 📈 Data Analysis Insights
+
+### **Session Patterns**
+
+- **Active Sessions**: 2 sessions currently running
+- **Session Duration**: Sessions created ~2 hours ago, still active
+- **Player Activity**: One session has 3 players, another has 0 (disconnected)
+- **Command Types**: "check inventory", "look around", "help" commands
+
+### **Event Stream Analysis**
+
+- **Event Frequency**: Regular player activity with timestamps
+- **Command Variety**: Different types of player actions
+- **Player Engagement**: Active players using various commands
+- **Session Persistence**: Events preserved even when players disconnect
+
+### **Performance Metrics**
+
+- **Memory Usage**: 964KB for 2 sessions (very efficient)
+- **Key Count**: 5 keys total (clean database)
+- **No Expired Keys**: Clean state, no TTL issues
+- **Fast Access**: O(1) operations for all queries
+
+## 📋 Redis Command Summary
+
+### **Session Management**
+
+| Command                       | Purpose             | Example                 |
+| ----------------------------- | ------------------- | ----------------------- |
+| `KEYS game:*:state`           | List all sessions   | `game:97oZyf91Wr:state` |
+| `HGETALL game:{id}:state`     | Get session details | Status, timestamps      |
+| `HGET game:{id}:state status` | Get session status  | "active" or "ended"     |
+
+### **Event Tracking**
+
+| Command                                  | Purpose         | Example             |
+| ---------------------------------------- | --------------- | ------------------- |
+| `XRANGE game:{id}:events - +`            | View all events | Player commands     |
+| `XLEN game:{id}:events`                  | Count events    | `(integer) 4`       |
+| `XREVRANGE game:{id}:events + - COUNT 1` | Latest event    | Most recent command |
+
+### **Player Management**
+
+| Command                             | Purpose       | Example       |
+| ----------------------------------- | ------------- | ------------- |
+| `SMEMBERS game:{id}:players`        | List players  | Socket IDs    |
+| `SCARD game:{id}:players`           | Count players | `(integer) 3` |
+| `SADD game:{id}:players {playerId}` | Add player    | Join session  |
+| `SREM game:{id}:players {playerId}` | Remove player | Leave session |
+
+### **System Monitoring**
+
+| Command         | Purpose            | Example            |
+| --------------- | ------------------ | ------------------ |
+| `DBSIZE`        | Total keys         | `(integer) 5`      |
+| `INFO memory`   | Memory usage       | `964.05K`          |
+| `INFO keyspace` | Database stats     | `keys=5,expires=0` |
+| `MONITOR`       | Real-time activity | Watch commands     |
+
+### **Data Management**
+
+| Command           | Purpose        | Example                         |
+| ----------------- | -------------- | ------------------------------- |
+| `DEL game:{id}:*` | Delete session | Remove all session data         |
+| `FLUSHALL`        | Clear all data | **DANGER** - removes everything |
+| `KEYS "*"`        | List all keys  | See entire database             |
+
 ## Environment Variables
 
 ### Backend (.env)
@@ -1148,27 +1907,79 @@ OPENAI_API_KEY=your_openai_api_key_here
 VITE_API_URL=http://localhost:3001
 ```
 
-## Contributing
+## 🔍 Troubleshooting
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+### Startup Issues
 
-## License
+#### **Docker Compose Fails to Start**
 
-This project is licensed under the MIT License.
+```bash
+# Check if ports are available
+lsof -ti:3001,5173,6379
 
-## Support
+# Clean up and restart
+docker-compose down
+docker system prune -f
+docker-compose up --build
 
-For issues and questions, please open an issue on GitHub.
+# Check Docker logs
+docker-compose logs
+```
 
-## Troubleshooting
+#### **Redis Connection Issues**
+
+```bash
+# Check if Redis is running
+redis-cli PING
+
+# Check Redis logs
+docker logs $(docker ps -q --filter "ancestor=redislabs/rejson")
+
+# Test RedisJSON module
+redis-cli JSON.SET test $ '{"hello": "world"}'
+```
+
+#### **Backend Won't Start**
+
+```bash
+# Check if port 3001 is in use
+lsof -ti:3001
+
+# Kill process using port 3001
+sudo lsof -ti:3001 | xargs kill -9
+
+# Check backend logs
+docker-compose logs backend
+```
+
+#### **Frontend Won't Load**
+
+```bash
+# Check if port 5173 is in use
+lsof -ti:5173
+
+# Check frontend logs
+docker-compose logs frontend
+
+# Test nginx configuration
+docker exec -it $(docker ps -q --filter "ancestor=ai-dungeon-frontend") nginx -t
+```
+
+### Lore System Issues
+
+```bash
+# Test RedisJSON functionality
+redis-cli JSON.SET lore:test $ '{"id": "test", "type": "test", "title": "Test"}'
+redis-cli JSON.GET lore:test
+
+# Check if lore entries exist
+KEYS lore:*
+
+# Verify lore type indexing
+SMEMBERS lore:type:world_rule
+```
 
 ### Port Already in Use
-
-If you encounter a "port already in use" error when starting the backend server:
 
 ```bash
 # Find processes using port 3001
@@ -1181,28 +1992,16 @@ sudo lsof -ti:3001 | xargs kill -9
 pkill -f "tsx src/server.ts"
 ```
 
-### Multiplayer Session Management
+## Contributing
 
-The application uses Redis for robust multiplayer session management:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-**Key Points:**
-✅ Only actual game sessions are tracked in Redis (not just socket connections)
-✅ Player count is accurate - only counts players who joined sessions
-✅ Session discovery works - shows real active sessions
-✅ Rejoining works - players can switch between sessions
-✅ Session deletion - remove inactive or unwanted sessions
-✅ Story log management - prevents endless scrolling with 50-entry limit
+## Support
 
-**Server Logging:**
-The logging now clearly distinguishes between:
+For issues and questions, please open an issue on GitHub.
 
-- 🔌 **Socket connections** (just connected to server)
-- 🎮 **Game session joins** (actually joined a game)
 
-**Session Persistence:**
-
-- Sessions are automatically saved to localStorage for easy rejoining
-- URL parameters maintain session state across page refreshes
-- Active sessions are discoverable via the session browser
-- Players can seamlessly switch between different game sessions
-- Clear story log functionality for better UX
