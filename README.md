@@ -1379,7 +1379,7 @@ realtime_ai_dungeon_master/
 ├── docker-compose.yml             # Full stack deployment
 ├── .gitignore                     # Root gitignore
 ├── README.md                      # Main project documentation
-└── REALTIME_AI_DUNGEON_MASTER.md # Original project plan
+└── PROJECT_PLAN.md               # Original project plan (local only, not in repo)
 ```
 
 ## Redis Data Structures
