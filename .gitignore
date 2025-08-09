@@ -153,3 +153,7 @@ Desktop.ini
 
 # Application specific
 # Add any project-specific files here
+
+# Local only artifacts
+REALTIME_AI_DUNGEON_MASTER.md
+PROJECT_PLAN.md
