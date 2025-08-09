@@ -20,11 +20,14 @@ export function validateEnvironment(): void {
     );
   }
 
-  // Validate Redis URL format
+  // Validate Redis URL format (allow both redis:// and rediss:// for TLS providers like Upstash)
   const redisUrl = process.env.REDIS_URL;
-  if (redisUrl && !redisUrl.startsWith("redis://")) {
+  if (
+    redisUrl &&
+    !(redisUrl.startsWith("redis://") || redisUrl.startsWith("rediss://"))
+  ) {
     throw new Error(
-      'REDIS_URL must be a valid Redis URL starting with "redis://"'
+      'REDIS_URL must be a valid Redis URL starting with "redis://" or "rediss://"'
     );
   }
 

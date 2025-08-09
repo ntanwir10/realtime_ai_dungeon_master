@@ -199,7 +199,7 @@ function LandingPage({ onJoinSession, onCreateSession }: LandingPageProps) {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left Column - Create & Join Sessions */}
           <div className="space-y-6">
             {/* Create New Session */}
@@ -400,10 +400,11 @@ function LandingPage({ onJoinSession, onCreateSession }: LandingPageProps) {
             {/* How to Play */}
             <div>
               <h2 className="text-2xl font-bold mb-6">How to Play</h2>
-              <div className="space-y-4">
+              {/* Compact responsive grid for better visual balance (great for screenshots) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {howToPlay.map((step, index) => (
-                  <Card key={index}>
-                    <CardContent className="flex items-start space-x-4 p-4">
+                  <Card key={index} className="h-full">
+                    <CardContent className="h-full flex items-start space-x-4 p-4">
                       <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
                         {step.step}
                       </div>
